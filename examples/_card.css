@@ -13,6 +13,7 @@
      * https://css-tricks.com/box-sizing/
      */
     box-sizing: border-box;
+    margin: 2px;
 }
 
 .avatar {
