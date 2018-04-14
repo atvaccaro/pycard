@@ -11,9 +11,9 @@ from livereload import Server
 from watchdog.events import LoggingEventHandler, FileSystemEventHandler
 from watchdog.observers import Observer
 
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 
-RENDERED_CARDS_FILE = "index.html"
+RENDERED_CARDS_FILE = 'index.html'
 
 
 class CardRenderer:
@@ -21,16 +21,16 @@ class CardRenderer:
         self.prefix = prefix
         self.input_path = input_path
 
-        self.csv_card_path = self.get_path("csv")
-        self.custom_header_path = self.get_path("header.html")
-        self.single_card_template_path = self.get_path("html.jinja2")
+        self.csv_card_path = self.get_path('csv')
+        self.custom_header_path = self.get_path('header.html')
+        self.single_card_template_path = self.get_path('html.jinja2')
 
         self.cards_template_path = os.path.join(os.path.dirname(__file__), 'cards.html.jinja2')
 
         self.all_cards_rendered_path = os.path.join(input_path, RENDERED_CARDS_FILE)
 
     def get_path(self, extension):
-        return os.path.join(self.input_path, "{}.{}".format(self.prefix, extension))
+        return os.path.join(self.input_path, '{}.{}'.format(self.prefix, extension))
 
     def render_cards(self):
         # I've noticed that when saving the CSV file
@@ -40,7 +40,7 @@ class CardRenderer:
 
         # load the csv file
         cards_data = []
-        with open(self.csv_card_path, "r", encoding='utf-8-sig') as csvfile:
+        with open(self.csv_card_path, 'r', encoding='utf-8-sig') as csvfile:
             reader = csv.DictReader(csvfile, dialect='custom_delimiter')
             for row in reader:
                 cards_data.append(row)
@@ -48,12 +48,12 @@ class CardRenderer:
         rendered_cards = []
 
         # load the single card template
-        with open(self.single_card_template_path, "r") as template_file:
+        with open(self.single_card_template_path, 'r') as template_file:
             template = Template(template_file.read())
 
             # render the template with card data
             for card_data in cards_data:
-                if str(card_data.get('ignore', "false")).lower() == "true":
+                if str(card_data.get('ignore', 'false')).lower() == 'true':
                     continue
 
                 rendered = template.render(
@@ -62,7 +62,7 @@ class CardRenderer:
                     __time=str(time.time())
                 )
                 num_cards = card_data.get('num_cards')
-                if num_cards is None or re.match("^[^0-9]*$", num_cards):
+                if num_cards is None or re.match('^[^0-9]*$', num_cards):
                     num_cards = 1
 
                 num_cards = int(num_cards)
@@ -73,13 +73,13 @@ class CardRenderer:
         custom_header = None
 
         if os.path.exists(self.custom_header_path):
-            with open(self.custom_header_path, "r") as f:
+            with open(self.custom_header_path, 'r') as f:
                 custom_header = f.read()
 
         # render the cards template with all rendered cards
-        with open(self.cards_template_path, "r") as cards_template_file:
+        with open(self.cards_template_path, 'r') as cards_template_file:
             template = Template(cards_template_file.read())
-            with open(self.all_cards_rendered_path, "w") as all_cards_rendered_file:
+            with open(self.all_cards_rendered_path, 'w') as all_cards_rendered_file:
                 all_cards_rendered_file.write(
                     template.render(
                         rendered_cards=rendered_cards,
@@ -102,39 +102,39 @@ class RenderingEventHandler(FileSystemEventHandler):
 
 def parse_options():
     parser = OptionParser(
-        usage="usage: %prog [options]",
-        version="%prog {}".format(VERSION)
+        usage='usage: %prog [options]',
+        version='%prog {}'.format(VERSION)
     )
-    parser.add_option("-p", "--path",
-                      help="path to assets",
-                      dest="path",
+    parser.add_option('-p', '--path',
+                      help='path to assets',
+                      dest='path',
                       default=os.getcwd(),
-                      metavar="PATH")
+                      metavar='PATH')
 
-    parser.add_option("-x", "--prefix",
-                      help="filename prefix, example _card<.ext>",
-                      dest="prefix",
-                      default="_card",
-                      metavar="PREFIX")
+    parser.add_option('-x', '--prefix',
+                      help='filename prefix, example _card<.ext>',
+                      dest='prefix',
+                      default='_card',
+                      metavar='PREFIX')
 
-    parser.add_option("-d", "--delimiter",
-                      help="delimiter used in the csv file, default: , (comma)",
-                      dest="delimiter",
-                      default=",",
-                      metavar="DELIMITER")
+    parser.add_option('-d', '--delimiter',
+                      help='delimiter used in the csv file, default: , (comma)',
+                      dest='delimiter',
+                      default=',',
+                      metavar='DELIMITER')
 
-    parser.add_option("--port",
-                      help="port to use for live reloaded page",
-                      dest="port",
-                      type="int",
+    parser.add_option('--port',
+                      help='port to use for live reloaded page',
+                      dest='port',
+                      type='int',
                       default=8800,
-                      metavar="PORT")
+                      metavar='PORT')
 
-    parser.add_option("--address",
-                      help="host address to bind to",
-                      dest="host_address",
-                      default="0.0.0.0",
-                      metavar="ADDRESS")
+    parser.add_option('--address',
+                      help='host address to bind to',
+                      dest='host_address',
+                      default='0.0.0.0',
+                      metavar='ADDRESS')
 
     return parser.parse_args()
 
@@ -172,5 +172,5 @@ def main():
     observer.join()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
