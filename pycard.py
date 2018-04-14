@@ -1,4 +1,5 @@
 import csv
+import json
 import logging
 import os
 import re
@@ -17,11 +18,12 @@ RENDERED_CARDS_FILE = 'index.html'
 
 
 class CardRenderer:
-    def __init__(self, input_path, prefix):
-        self.prefix = prefix
+    def __init__(self, input_path, prefix, format):
         self.input_path = input_path
+        self.prefix = prefix
+        self.format = format
 
-        self.csv_card_path = self.get_path('csv')
+        self.card_data_path = self.get_path(format)
         self.custom_header_path = self.get_path('header.html')
         self.single_card_template_path = self.get_path('html.jinja2')
 
@@ -38,12 +40,15 @@ class CardRenderer:
         # unless I add a small sleep before attempting to read everything
         time.sleep(0.5)
 
-        # load the csv file
+        # load the card data file
         cards_data = []
-        with open(self.csv_card_path, 'r', encoding='utf-8-sig') as csvfile:
-            reader = csv.DictReader(csvfile, dialect='custom_delimiter')
-            for row in reader:
-                cards_data.append(row)
+        with open(self.card_data_path, 'r', encoding='utf-8-sig') as f:
+            if self.format == 'json':
+                cards_data = json.load(f)
+            else:
+                reader = csv.DictReader(f, dialect='custom_delimiter')
+                for row in reader:
+                    cards_data.append(row)
 
         rendered_cards = []
 
@@ -61,12 +66,14 @@ class CardRenderer:
                     __card_data=card_data,
                     __time=str(time.time())
                 )
-                num_cards = card_data.get('num_cards')
-                if num_cards is None or re.match('^[^0-9]*$', num_cards):
-                    num_cards = 1
 
-                num_cards = int(num_cards)
-                for i in range(0, int(num_cards)):
+                num_cards = 1
+                try:
+                    num_cards = int(card_data.get('num_cards', 1))
+                except (ValueError, TypeError):
+                    pass
+
+                for i in range(num_cards):
                     rendered_cards.append(rendered)
 
         # Load custom header html if it exists
@@ -111,6 +118,12 @@ def parse_options():
                       default=os.getcwd(),
                       metavar='PATH')
 
+    parser.add_option('-f', '--format',
+                      help='csv or json file format',
+                      dest='format',
+                      default='csv',
+                      metavar='FORMAT')
+
     parser.add_option('-x', '--prefix',
                       help='filename prefix, example _card<.ext>',
                       dest='prefix',
@@ -150,10 +163,12 @@ def main():
     assets_path = options.path
     file_prefix = options.prefix
     host_address = options.host_address
+    format = options.format
 
-    csv.register_dialect('custom_delimiter', delimiter=options.delimiter)
+    if format == 'csv':
+        csv.register_dialect('custom_delimiter', delimiter=options.delimiter)
 
-    card_renderer = CardRenderer(assets_path, file_prefix)
+    card_renderer = CardRenderer(assets_path, file_prefix, format)
 
     observer = Observer()
     observer.schedule(LoggingEventHandler(), assets_path, recursive=True)

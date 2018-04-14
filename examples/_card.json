@@ -1,0 +1,13 @@
+[
+  {
+    "avatar": "barbarian.png",
+    "name": "Barbarian",
+    "defense": 7,
+    "attack": 2,
+    "health": 6,
+    "insanity": 8,
+    "move": 2,
+    "text": "sed do eiusmod tempor incididunt ut labore et dolore magna",
+    "num_cards": 1
+  }
+]
