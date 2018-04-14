@@ -103,3 +103,4 @@ ENV/
 /examples/index.html
 .DS_Store
 .idea/
+games/ # put projects under this
