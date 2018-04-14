@@ -1,15 +1,15 @@
-from jinja2 import Template
-import os
-from optparse import OptionParser
-import logging
 import csv
-import time
+import logging
+import os
 import re
-from watchdog.observers import Observer
-from watchdog.events import LoggingEventHandler, FileSystemEventHandler
-from itertools import zip_longest
-from livereload import Server
+import time
+import webbrowser
+from optparse import OptionParser
 
+from jinja2 import Template
+from livereload import Server
+from watchdog.events import LoggingEventHandler, FileSystemEventHandler
+from watchdog.observers import Observer
 
 VERSION = '0.1.0'
 
@@ -165,6 +165,7 @@ def main():
 
     server = Server()
     server.watch(card_renderer.all_cards_rendered_path)
+    webbrowser.open('http://{}:{}'.format(host_address, port))
     server.serve(root=assets_path, port=port, host=host_address)
 
     observer.stop()
