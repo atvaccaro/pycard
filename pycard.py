@@ -2,11 +2,11 @@ import csv
 import json
 import logging
 import os
-import re
 import time
 import webbrowser
 from optparse import OptionParser
 
+import markdown
 from jinja2 import Template
 from livereload import Server
 from watchdog.events import LoggingEventHandler, FileSystemEventHandler
@@ -96,15 +96,29 @@ class CardRenderer:
                 )
 
 
+class RulesRenderer:
+    def __init__(self, input_path):
+        self.input_path = input_path
+
+    def render_rules(self):
+        with open(os.path.join(self.input_path, 'rules.md')) as f:
+            html = markdown.markdown(f.read())
+
+            with open(os.path.join(self.input_path, 'rules.html'), 'w') as fout:
+                fout.write(html)
+
+
 class RenderingEventHandler(FileSystemEventHandler):
-    def __init__(self, card_renderer):
+    def __init__(self, card_renderer, rules_renderer):
         self.card_renderer = card_renderer
+        self.rules_renderer = rules_renderer
 
     def on_any_event(self, event):
         if event.src_path == self.card_renderer.all_cards_rendered_path:
             return
 
         self.card_renderer.render_cards()
+        self.rules_renderer.render_rules()
 
 
 def parse_options():
@@ -169,18 +183,21 @@ def main():
         csv.register_dialect('custom_delimiter', delimiter=options.delimiter)
 
     card_renderer = CardRenderer(assets_path, file_prefix, format)
+    rules_renderer = RulesRenderer(assets_path)
 
     observer = Observer()
     observer.schedule(LoggingEventHandler(), assets_path, recursive=True)
-    observer.schedule(RenderingEventHandler(card_renderer), assets_path, recursive=True)
+    observer.schedule(RenderingEventHandler(card_renderer, rules_renderer), assets_path, recursive=True)
 
     card_renderer.render_cards()
+    rules_renderer.render_rules()
 
     observer.start()
 
     server = Server()
     server.watch(card_renderer.all_cards_rendered_path)
     webbrowser.open('http://{}:{}'.format(host_address, port))
+    webbrowser.open('http://{}:{}/rules.html'.format(host_address, port))
     server.serve(root=assets_path, port=port, host=host_address)
 
     observer.stop()
