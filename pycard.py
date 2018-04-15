@@ -6,7 +6,7 @@ import time
 import webbrowser
 from optparse import OptionParser
 
-import markdown
+import markdown2
 from jinja2 import Template
 from livereload import Server
 from watchdog.events import LoggingEventHandler, FileSystemEventHandler
@@ -15,6 +15,7 @@ from watchdog.observers import Observer
 VERSION = '0.2.0'
 
 RENDERED_CARDS_FILE = 'index.html'
+RENDERED_RULES_FILE = 'rules.html'
 
 
 class CardRenderer:
@@ -102,9 +103,9 @@ class RulesRenderer:
 
     def render_rules(self):
         with open(os.path.join(self.input_path, 'rules.md')) as f:
-            html = markdown.markdown(f.read())
+            html = markdown2.markdown(f.read())
 
-            with open(os.path.join(self.input_path, 'rules.html'), 'w') as fout:
+            with open(os.path.join(self.input_path, RENDERED_RULES_FILE), 'w') as fout:
                 fout.write(html)
 
 
@@ -197,7 +198,7 @@ def main():
     server = Server()
     server.watch(card_renderer.all_cards_rendered_path)
     webbrowser.open('http://{}:{}'.format(host_address, port))
-    webbrowser.open('http://{}:{}/rules.html'.format(host_address, port))
+    webbrowser.open('http://{}:{}/{}'.format(host_address, port, RENDERED_RULES_FILE))
     server.serve(root=assets_path, port=port, host=host_address)
 
     observer.stop()
