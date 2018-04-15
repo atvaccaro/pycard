@@ -1,47 +1,25 @@
 # PyCard
 Un-opinionated card game prototyping engine
 
-Generate printable cards for prototyping using csv, html, css.
+Generate printable cards for prototyping using HTML, CSS, and CSV/JSON.
 
-* Card data stored in csv file (delimiter can be specified)
-* Html jinja2 templating
+* HTML jinja2 templating
 * CSS for styling
-
-_Only tested in Python 3.6_
-
-<img src="https://user-images.githubusercontent.com/903488/31864446-602639ec-b712-11e7-84d5-70424943deac.png" alt="works on python 3.6" width="100px" align="left">
-
-<img src="https://user-images.githubusercontent.com/903488/31864552-b1f87716-b713-11e7-9978-fc4109fbe66f.png" alt="works on windows" width="165px" align="left">
-
-<img src="https://user-images.githubusercontent.com/903488/31864413-d8e8e11e-b711-11e7-930a-0eab31a97848.png" alt="works on osx/mac" width="75px" align="left">
-
-<img src="https://user-images.githubusercontent.com/903488/31864438-4419b710-b712-11e7-8c3a-9c823c6e57da.png" alt="works on linux" width="75px">
+* Card data stored in csv file (delimiter can be specified) or JSON file
 
 ###  Quick Start
 
 ```
-git clone https://github.com/ghostsquad/pycard.git
+git clone https://github.com/atvaccaro/pycard.git
 cd pycard
 pip install -r requirements.txt
 python pycard.py -p ./examples -d "|"
 ```
 
-OR
-
-```
-docker run -p 8800:80 ghostsquad/pycard pycard -p ./examples -d "|"
-```
-
-Running the Docker container with your own data (comma separated csv)
-
-```
-docker run -p80 -v /path/to/your/card_files:/data ghostsquad/pycard pycard -p /data -d ","
-```
-
 Example output
 
 ```
-$ python pycard.py examples
+$ python pycard.py -p ./examples -d "|"
 [I 171010 19:30:34 server:283] Serving on http://127.0.0.1:8800
 2017-10-10 19:30:34 - Serving on http://127.0.0.1:8800
 [I 171010 19:30:34 handlers:60] Start watching changes
@@ -52,7 +30,7 @@ $ python pycard.py examples
 2017-10-10 19:30:34 - Modified directory: examples
 ```
 
-Navigate to `localhost:8800` to see your cards. This page will automatically refresh anytime changes are made.
+Navigate to `localhost:8800` to see your cards. This page will automatically refresh anytime changes are made. Tabs for cards and rules are opened automatically.
 
 You can also run `python pycard.py --help` for a list of options.
 
@@ -98,3 +76,5 @@ The page found at localhost:8800 is now printable!
 ### Credits
 
 Inspired by https://github.com/vaemendis/hccd
+
+Forked by https://github.com/atvaccaro
