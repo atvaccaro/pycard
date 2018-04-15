@@ -105,7 +105,7 @@ class RulesRenderer:
         with open(os.path.join(self.input_path, 'rules.md')) as f:
             rules_html = markdown2.markdown(f.read())
 
-            with open(os.path.join(self.input_path, 'rules.html.jinja2')) as rules_template_file:
+            with open(os.path.join(os.path.dirname(__file__), 'rules.html.jinja2')) as rules_template_file:
                 template = Template(rules_template_file.read())
                 with open(os.path.join(self.input_path, RENDERED_RULES_FILE), 'w') as fout:
                     fout.write(template.render(
