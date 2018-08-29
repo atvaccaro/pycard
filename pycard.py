@@ -62,20 +62,33 @@ class CardRenderer:
                 if str(card_data.get('ignore', 'false')).lower() == 'true':
                     continue
 
-                rendered = template.render(
-                    card_data,
-                    __card_data=card_data,
-                    __time=str(time.time())
-                )
+                if card_data.get('suits') is not None:
+                    for suit in card_data['suits']:
+                        cd = card_data.copy()
+                        cd['suit'] = suit
 
-                num_cards = 1
-                try:
-                    num_cards = int(card_data.get('num_cards', 1))
-                except (ValueError, TypeError):
-                    pass
+                        rendered = template.render(
+                            cd,
+                            __card_data=cd,
+                            __time=str(time.time())
+                        )
 
-                for i in range(num_cards):
-                    rendered_cards.append(rendered)
+                        rendered_cards.append(rendered)
+                else:
+                    rendered = template.render(
+                        card_data,
+                        __card_data=card_data,
+                        __time=str(time.time())
+                    )
+
+                    num_cards = 1
+                    try:
+                        num_cards = int(card_data.get('num_cards', 1))
+                    except (ValueError, TypeError):
+                        pass
+
+                    for i in range(num_cards):
+                        rendered_cards.append(rendered)
 
         # Load custom header html if it exists
         custom_header = None
